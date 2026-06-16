@@ -19,9 +19,9 @@ function hideBanner() { $('result-banner').className = ''; }
 function showBanner(text, type) { const b=$('result-banner'); b.textContent=text; b.className=type; }
 
 function cardHTML(card) {
-  if (!card) return `<div class="card back animate"></div>`;
+  if (!card) return `<div class="card back anim"></div>`;
   const red = RED_SUITS.has(card.suit) ? ' red' : '';
-  return `<div class="card${red} animate">
+  return `<div class="card${red} anim">
     <div class="card-rank">${card.rank}</div>
     <div class="card-suit">${card.suit}</div>
   </div>`;
@@ -128,7 +128,7 @@ socket.on('state', data => {
   if (!mySeat && data.mySeat) {
     mySeat = data.mySeat;
     $('join-screen').style.display = 'none';
-    $('game-screen').style.display = 'block';
+    $('game-screen').style.display = 'flex';
   }
 
   // Chips
@@ -203,7 +203,7 @@ function renderSeatPanel(seatNo, seatData, mySeatNo, phase, myCards, myHand) {
     cardsHTML = `<div class="cards-row">${cards.map(c=>cardHTML(c)).join('')}</div>`;
     if (handName) cardsHTML += `<div class="hand-badge">${handName}</div>`;
   } else if ((phase === 'dealt' || phase === 'result') && !isMe) {
-    cardsHTML = `<div class="cards-row">${[0,1,2].map(()=>`<div class="card back" style="width:40px;height:58px"></div>`).join('')}</div>`;
+    cardsHTML = `<div class="cards-row" style="gap:4px">${[0,1,2].map(()=>`<div class="card back" style="width:36px;height:52px"></div>`).join('')}</div>`;
   }
 
   panel.innerHTML = `
@@ -233,8 +233,9 @@ function updateButtons(data) {
       show('btn-play');
       show('btn-fold');
     }
+  } else if (phase === 'result') {
+    show('btn-new-round');
   }
-  // result buttons are handled in 'results' event
 }
 
 function updateMessage(data) {
@@ -260,6 +261,16 @@ function updateMessage(data) {
 }
 
 $('payout-toggle').addEventListener('click', () => {
-  const t = $('payout-table');
-  t.style.display = t.style.display === 'block' ? 'none' : 'block';
+  $('payout-overlay').classList.add('open');
+});
+$('payout-close').addEventListener('click', () => {
+  $('payout-overlay').classList.remove('open');
+});
+$('payout-overlay').addEventListener('click', e => {
+  if (e.target === $('payout-overlay')) $('payout-overlay').classList.remove('open');
+});
+
+$('leave-btn').addEventListener('click', () => {
+  socket.emit('leave');
+  location.reload();
 });

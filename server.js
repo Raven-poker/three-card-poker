@@ -93,7 +93,7 @@ function broadcast() {
   // Send each player their private cards, others only see back
   const base = {
     phase,
-    dealerCards: phase === 'result' ? dealerCards : dealerCards.map(() => null), // null = face down
+    dealerCards: phase === 'result' ? dealerCards : [null, null, null],
     seats: seatList(),
   };
   for (const [seatNo, p] of Object.entries(seats)) {
